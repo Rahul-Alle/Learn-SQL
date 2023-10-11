@@ -1,0 +1,85 @@
+#1
+create table songs(
+ID INT NOT NULL auto_increment,
+NAME VARCHAR(25) NOT NULL,
+LENGTH float NOT NULL,
+ALBUM_ID INT NOT NULL,
+PRIMARY KEY(ID),
+FOREIGN KEY (ALBUM_ID) REFERENCES ALBUMS(ID)
+);
+
+#2
+SELECT NAME FROM BANDS;
+
+#3
+SELECT * FROM ALBUMS WHERE RELEASE_YEAR = (SELECT MIN(RELEASE_YEAR) FROM ALBUMS);
+SELECT * FROM ALBUMS WHERE RELEASE_YEAR IS NOT NULL ORDER BY RELEASE_YEAR LIMIT 1;
+
+#4
+SELECT DISTINCT(B.NAME) AS 'Band Name' FROM BANDS  B, ALBUMS AB WHERE B.ID = AB.BAND_ID;
+
+#5
+SELECT NAME AS 'Band Name' FROM BANDS WHERE ID NOT IN (SELECT DISTINCT(B.ID) FROM BANDS B, ALBUMS AB WHERE B.ID = AB.BAND_ID); 
+SELECT BANDS.NAME FROM BANDS  LEFT JOIN ALBUMS  ON BANDS.ID = ALBUMS.BAND_ID GROUP BY ALBUMS.BAND_ID HAVING COUNT(ALBUMS.ID) = 0;
+
+#6
+select 
+	albums.name as Name,
+	albums.release_year as 'Release Year',
+    sum(songs.length) as 'Duration'
+from albums join songs
+on albums.id = songs.album_id
+group by songs.album_id order by Duration desc
+limit 1;
+
+#7
+select * from albums where release_year is null;
+update albums set release_year = 1986 where id = 4;
+
+#8
+select * from bands;
+insert into bands(name) values('Imagine Dragons');
+select * from albums;
+insert into albums(name,release_year,band_id) values('Enemy',2021,8);
+
+#9 
+delete from albums where id=19;
+delete from bands where id=8;
+
+#10 
+select avg(length) as 'Average Song Duration' from songs;
+
+#11
+select 
+	albums.name as 'Album',
+    albums.release_year as 'Release Year',
+    max(songs.length) as 'Duration'
+    from albums join songs
+    on albums.id = songs.album_id
+    group by songs.album_id;
+    
+#12
+#album name and songs per album
+select 
+	albums.band_id as 'Band Id',
+	albums.name as 'Album Name',
+    count(songs.id) as 'Songs Per Album'
+    from albums join songs 
+    on albums.id = songs.album_id
+    group by songs.album_id;
+    
+#number of songs for each band
+select
+	bands.name as 'Band',
+    count(songs.id) as 'Number of Songs'
+    from bands 
+    join albums on bands.id = albums.band_id
+    join songs on albums.id = songs.album_id
+    group by albums.band_id;
+    
+select 
+	albums.band_id as 'Band Id',
+    count(songs.id) as 'Songs Per Band'
+    from albums join songs 
+    on albums.id = songs.album_id
+    group by albums.band_id;
